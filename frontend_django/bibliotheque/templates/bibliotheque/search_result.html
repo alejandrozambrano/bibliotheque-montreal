@@ -1,0 +1,15 @@
+{% extends "bibliotheque/base.html" %}
+{% block title %}Résultat de recherche{% endblock %}
+{% block header %}Résultat de recherche{% endblock %}
+{% block content %}
+  {% if livre %}
+    <p><span style="padding:4px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700">ID: {{ livre.id }}</span></p>
+    <h2 style="margin:8px 0 4px">{{ livre.nameLivre }}</h2>
+    <div><strong>Auteur:</strong> {{ livre.auteur }}</div>
+    <div style="margin:6px 0"><strong>Bio:</strong> {{ livre.bio }}</div>
+    {% if livre.picture %}<img class="cover" src="{{ livre.picture }}" alt="">{% endif %}
+  {% else %}
+    <p>Aucun résultat.</p>
+  {% endif %}
+  <div class="actions"><a class="btn" href="{% url 'index' %}">⬅️ Retour</a></div>
+{% endblock %}

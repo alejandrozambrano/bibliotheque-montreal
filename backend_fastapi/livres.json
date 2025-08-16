@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "nameLivre": "grgr",
+        "bio": "li",
+        "auteur": "kuku",
+        "picture": "https://alejandrozambrano.github.io/perfil.jpeg"
+    },
+    {
+        "id": 2,
+        "nameLivre": "L'\u00c9tranger",
+        "bio": "Un roman existentialiste qui questionne l\u2019absurdit\u00e9 de la vie humaine.",
+        "auteur": "Albert Camus",
+        "picture": "https://m.media-amazon.com/images/I/51wUV4c64BL._SL500_.jpg"
+    },
+    {
+        "id": 3,
+        "nameLivre": "Les Mis\u00e9rables",
+        "bio": "Une fresque sociale sur l\u2019injustice, la r\u00e9demption et l\u2019amour.",
+        "auteur": "Albert Camus",
+        "picture": "https://listeningbooks.s3.eu-west-2.amazonaws.com/public/books/500x0/15565.jpg"
+    },
+    {
+        "id": 4,
+        "nameLivre": "Madame Bovary new",
+        "bio": "Une critique de la soci\u00e9t\u00e9 bourgeoise \u00e0 travers la vie d\u2019une femme r\u00eaveuse.",
+        "auteur": "Gustave Flaubert new",
+        "picture": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1741368185i/2175.jpg"
+    },
+    {
+        "id": 5,
+        "nameLivre": "Notre-Dame de Paris Nwe",
+        "bio": "Un roman historique centr\u00e9 sur la cath\u00e9drale et ses personnages tragiques. New",
+        "auteur": "Victor Hugo new",
+        "picture": "https://images.leslibraires.ca/books/9791041415311/front/9791041415311_large.webp"
+    }
+]

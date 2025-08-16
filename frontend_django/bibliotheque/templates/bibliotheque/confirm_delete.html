@@ -1,0 +1,14 @@
+{% extends "bibliotheque/base.html" %}
+{% block title %}Supprimer le Livre #{{ id }}{% endblock %}
+{% block header %}Supprimer le Livre #{{ id }}{% endblock %}
+{% block content %}
+  <p>Êtes-vous sûr de vouloir supprimer ce livre ?</p>
+  <p><strong>{{ livre.nameLivre }}</strong> — {{ livre.auteur }}</p>
+  <div>{% if livre.picture %}<img class="cover" src="{{ livre.picture }}" alt="">{% endif %}</div>
+
+  <form method="post" action="{{ action }}" style="margin-top:14px">
+    {% csrf_token %}
+    <a class="btn ghost" href="{% url 'index' %}">Annuler</a>
+    <button class="btn danger" type="submit">🗑️ Supprimer</button>
+  </form>
+{% endblock %}

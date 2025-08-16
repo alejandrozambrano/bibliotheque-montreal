@@ -1,0 +1,48 @@
+{% extends "bibliotheque/base.html" %}
+{% block title %}Bibliothèque — Django (Python){% endblock %}
+{% block header %}Bibliothèque — Django (Python){% endblock %}
+{% block content %}
+  <div class="actions">
+    <a href="{% url 'index' %}" class="btn">📚 Voir les livres</a>
+    <a href="{% url 'livre_create' %}" class="btn secondary">➕ Ajouter un Livre</a>
+    <form method="post" action="{% url 'search_by_id' %}">
+      {% csrf_token %}
+      {{ id_form.id }} <button class="btn ghost" type="submit">🔎 Rechercher par ID</button>
+    </form>
+    <span class="badge">📊 Total des Livres: <strong>{{ total }}</strong></span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:80px">ID</th>
+          <th style="width:240px">Titre</th>
+          <th style="width:220px">Auteur</th>
+          <th>Bio</th>
+          <th style="width:160px">Picture</th>
+          <th style="width:160px">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% if livres %}
+        {% for it in livres %}
+          <tr>
+            <td>{{ it.id }}</td>
+            <td>{{ it.nameLivre }}</td>
+            <td>{{ it.auteur }}</td>
+            <td>{{ it.bio }}</td>
+            <td>{% if it.picture %}<img class="cover" src="{{ it.picture }}" alt="">{% endif %}</td>
+            <td>
+              <a class="btn ghost" href="{% url 'livre_update' it.id %}">✏️ Modifier</a>
+              <a class="btn danger" href="{% url 'livre_delete' it.id %}">🗑️ Supprimer</a>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="6">Aucun livre trouvé.</td></tr>
+      {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

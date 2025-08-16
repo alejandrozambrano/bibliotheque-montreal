@@ -1,0 +1,22 @@
+{% extends "bibliotheque/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block header %}{{ title }}{% endblock %}
+{% block content %}
+  <form method="post" action="{{ action }}">
+    {% csrf_token %}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      {% for field in form %}
+        <div>
+          <label><strong>{{ field.label }}</strong></label>
+          {{ field }}
+          {% for e in field.errors %}<div class="msg error">{{ e }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="actions" style="margin-top:14px">
+      <a class="btn ghost" href="{% url 'index' %}">⬅️ Retour</a>
+      <button class="btn right" type="submit">{% if is_create %}📘 Ajouter{% else %}💾 Enregistrer{% endif %}</button>
+    </div>
+  </form>
+{% endblock %}

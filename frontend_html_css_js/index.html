@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bibliothèque — Client HTML</title>
+  <style>
+    :root { --green:#2f9e44; --indigo:#3f51b5; --bg:#f6f7fb; --ink:#1f2937; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1100px;margin:40px auto;padding:0 16px}
+    .card{background:#fff;border-radius:22px;box-shadow:0 10px 24px rgba(0,0,0,.08);padding:28px}
+    .title{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px}
+    .title h1{margin:0;font-size:clamp(22px,4vw,36px);color:var(--indigo)}
+    .actions{display:flex;gap:10px;justify-content:center;margin:18px 0 10px;flex-wrap:wrap}
+    .btn{appearance:none;border:1px solid var(--green);background:var(--green);color:#fff;
+         border-radius:14px;padding:10px 18px;font-weight:700;cursor:pointer;transition:.2s transform,.2s opacity}
+    .btn:hover{opacity:.95;transform:translateY(-1px)}
+    .btn.secondary{border-color:#334155;background:#334155}
+    .btn.danger{border-color:#b91c1c;background:#b91c1c}
+    .badge{background:var(--indigo);color:#fff;padding:6px 12px;border-radius:10px;font-weight:700}
+    .meta{display:flex;justify-content:center;margin:8px 0 14px}
+    .table-wrap{overflow-x:auto;border:1px solid #e9e9e9;border-radius:16px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px;border-bottom:1px solid #f0f0f0;text-align:left;vertical-align:top}
+    th{background:#fafbff;color:#334155;font-weight:800}
+    tr:hover{background:#fcfcff}
+    .empty{text-align:center;color:#6b7280;padding:8px 0}
+    img.cover{max-width:100px;border-radius:8px;display:block}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .panel{width:min(680px,100%);background:#fff;border-radius:22px;box-shadow:0 10px 28px rgba(0,0,0,.2);padding:24px}
+    .panel h2{margin:0 0 12px;font-size:28px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-weight:700;display:block;margin-top:8px}
+    input, textarea{width:100%;padding:10px;border:1px solid #dfe3e6;border-radius:12px}
+    textarea{min-height:88px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .ghost{background:#fff;color:#334155;border:1px solid #334155}
+    .right{margin-left:auto}
+    .err{color:#b91c1c;font-weight:700;margin-top:8px}
+    .muted{color:#6b7280;font-size:12px}
+    .preview{display:flex;align-items:flex-start;gap:12px;margin-top:8px}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="title">
+        <img alt="books" width="32" height="32"
+             src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg">
+        <h1>Bibliothèque de Montréal</h1>
+      </div>
+
+      <div class="actions">
+        <button id="btnVoir" class="btn">📚 Voir les livres</button>
+        <button id="btnOpenCreate" class="btn secondary">➕ Ajouter un Livre</button>
+        <button id="btnOpenEdit" class="btn secondary">✏️ Modifier un Livre</button>
+        <button id="btnOpenDelete" class="btn danger">🗑️ Supprimer un Livre</button>
+        <button id="btnOpenSearch" class="btn ghost">🔎 Rechercher par ID</button>
+      </div>
+
+      <div class="meta">
+        <span class="badge">📊 Total des Livres: <strong id="total">0</strong></span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:80px">ID</th>
+              <th style="width:240px">Titre</th>
+              <th style="width:220px">Auteur</th>
+              <th>Bio</th>
+              <th style="width:160px">Picture</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td class="empty" colspan="5">Aucun livre trouvé.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Ajouter -->
+  <div id="modalCreate" class="modal" aria-hidden="true">
+    <div class="panel">
+      <h2>📘 Ajouter un Livre</h2>
+      <form id="formCreate">
+        <div class="grid">
+          <div>
+            <label for="id">ID *</label>
+            <input id="id" type="number" placeholder="ex: 7" required />
+          </div>
+          <div>
+            <label for="nameLivre">Titre *</label>
+            <input id="nameLivre" placeholder="ex: Le Petit Prince" required />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="auteur">Auteur *</label>
+            <input id="auteur" placeholder="ex: Antoine de Saint-Exupéry" required />
+          </div>
+          <div>
+            <label for="picture">Image (URL)</label>
+            <input id="picture" placeholder="https://..." />
+          </div>
+        </div>
+
+        <label for="bio">Description</label>
+        <textarea id="bio" placeholder="Courte description…"></textarea>
+
+        <div class="row">
+          <button type="button" class="btn ghost" id="btnCloseCreate">✖ Fermer</button>
+          <button type="submit" class="btn right">📘 Ajouter</button>
+        </div>
+
+        <div id="errCreate" class="err" style="display:none"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Modifier -->
+  <div id="modalEdit" class="modal" aria-hidden="true">
+    <div class="panel">
+      <h2>✏️ Modifier un Livre</h2>
+      <form id="formEdit">
+        <div class="grid">
+          <div>
+            <label for="editId">ID *</label>
+            <input id="editId" type="number" placeholder="ex: 3" required />
+            <div class="row" style="margin-top:8px;">
+              <button type="button" class="btn ghost" id="btnLoadById">🔎 Charger par ID</button>
+            </div>
+          </div>
+          <div>
+            <label for="editName">Titre *</label>
+            <input id="editName" placeholder="Titre…" required />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <label for="editAuteur">Auteur *</label>
+            <input id="editAuteur" placeholder="Auteur…" required />
+          </div>
+          <div>
+            <label for="editPicture">Image (URL)</label>
+            <input id="editPicture" placeholder="https://..." />
+          </div>
+        </div>
+
+        <label for="editBio">Description</label>
+        <textarea id="editBio" placeholder="Description…"></textarea>
+
+        <div class="row">
+          <button type="button" class="btn ghost" id="btnCloseEdit">✖ Fermer</button>
+          <button type="submit" class="btn right">💾 Enregistrer</button>
+        </div>
+
+        <div id="editErr" class="err" style="display:none"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Supprimer -->
+  <div id="modalDelete" class="modal" aria-hidden="true">
+    <div class="panel">
+      <h2>🗑️ Supprimer un Livre</h2>
+      <div class="grid">
+        <div>
+          <label for="delId">ID *</label>
+          <input id="delId" type="number" placeholder="ex: 5" />
+          <div class="row" style="margin-top:8px;">
+            <button id="btnPreviewDel" class="btn ghost" type="button">👁️ Prévisualiser</button>
+          </div>
+        </div>
+        <div>
+          <span class="muted">Aperçu:</span>
+          <div id="delPreview" class="pill">—</div>
+        </div>
+      </div>
+      <div class="row">
+        <button id="btnCloseDelete" class="btn ghost" type="button">✖ Fermer</button>
+        <button id="btnDoDelete" class="btn danger right" type="button">🗑️ Supprimer</button>
+      </div>
+      <div id="delErr" class="err" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Rechercher -->
+  <div id="modalSearch" class="modal" aria-hidden="true">
+    <div class="panel">
+      <h2>🔎 Rechercher un Livre par ID</h2>
+      <div class="row">
+        <input id="searchId" type="number" placeholder="ID…" />
+        <button id="btnDoSearch" class="btn" type="button">Rechercher</button>
+        <button id="btnCloseSearch" class="btn ghost right" type="button">Fermer</button>
+      </div>
+      <div id="searchResult" style="margin-top:12px"></div>
+      <div id="searchErr" class="err" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // Base de tu FastAPI
+    const api = axios.create({ baseURL: 'http://127.0.0.1:8000' });
+
+    // ====== Refs comunes ======
+    const $tbody = document.getElementById('tbody');
+    const $total = document.getElementById('total');
+
+    // ====== Helpers ======
+    const safe = v => (v === undefined || v === null) ? '' : String(v);
+    const open = ($el) => { $el.classList.add('open'); $el.setAttribute('aria-hidden','false'); };
+    const close = ($el) => { $el.classList.remove('open'); $el.setAttribute('aria-hidden','true'); };
+    function showErr(el, msg){ el.textContent = msg; el.style.display='block'; }
+    function hideErr(el){ el.textContent=''; el.style.display='none'; }
+
+    // ====== Render tabla ======
+    function render(items){
+      $tbody.innerHTML = '';
+      if(!items || items.length === 0){
+        $tbody.innerHTML = `<tr><td class="empty" colspan="5">Aucun livre trouvé.</td></tr>`;
+        return;
+      }
+      for(const it of items){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${safe(it.id)}</td>
+          <td>${safe(it.nameLivre)}</td>
+          <td>${safe(it.auteur)}</td>
+          <td>${safe(it.bio)}</td>
+          <td>${it.picture ? `<img class="cover" src="${safe(it.picture)}" alt="Couverture">` : ''}</td>
+        `;
+        // Click en fila → abrir edición precargada
+        tr.addEventListener('click', () => {
+          fillEditForm(it);
+          editErrHide();
+          open($modalEdit);
+        });
+        $tbody.appendChild(tr);
+      }
+    }
+
+    async function refreshTotal(){
+      try{
+        // GET /total_livres
+        const { data } = await api.get('/total_livres');
+        const total = (typeof data === 'object' && 'total' in data) ? data.total : Number(data ?? 0);
+        $total.textContent = total;
+      }catch{}
+    }
+    async function loadList(){
+      // GET /livres
+      const { data } = await api.get('/livres');
+      render(Array.isArray(data) ? data : []);
+    }
+    async function loadData(){ await Promise.all([loadList(), refreshTotal()]); }
+
+    // ====== CREATE ======
+    const $modalCreate = document.getElementById('modalCreate');
+    const $btnOpenCreate = document.getElementById('btnOpenCreate');
+    const $btnCloseCreate = document.getElementById('btnCloseCreate');
+    const $formCreate = document.getElementById('formCreate');
+    const $id = document.getElementById('id');
+    const $nameLivre = document.getElementById('nameLivre');
+    const $auteur = document.getElementById('auteur');
+    const $bio = document.getElementById('bio');
+    const $picture = document.getElementById('picture');
+    const $errCreate = document.getElementById('errCreate');
+
+    $btnOpenCreate.addEventListener('click', () => { $formCreate.reset(); $errCreate.style.display='none'; open($modalCreate); });
+    $btnCloseCreate?.addEventListener('click', () => close($modalCreate));
+    $modalCreate.addEventListener('click', (e)=>{ if(e.target === $modalCreate) close($modalCreate); });
+
+    $formCreate.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      $errCreate.style.display='none'; $errCreate.textContent='';
+
+      const idVal = Number($id.value);
+      if(!Number.isInteger(idVal) || idVal < 1){
+        showErr($errCreate, "L'ID doit être un entier ≥ 1.");
+        return;
+      }
+
+      const payload = {
+        id: idVal,
+        nameLivre: $nameLivre.value.trim(),
+        bio: $bio.value.trim(),
+        auteur: $auteur.value.trim(),
+        picture: $picture.value.trim()
+      };
+
+      try{
+        // POST /livre
+        await api.post('/livre', payload);
+        close($modalCreate);
+        await loadData();
+        alert('✅ Livre ajouté avec succès.');
+      }catch(err){
+        const msg = err?.response?.data?.detail || 'Erreur lors de la création du livre.';
+        showErr($errCreate, `❌ ${msg}`);
+      }
+    });
+
+    // ====== EDIT ======
+    const $modalEdit = document.getElementById('modalEdit');
+    const $btnOpenEdit = document.getElementById('btnOpenEdit');
+    const $btnCloseEdit = document.getElementById('btnCloseEdit');
+    const $formEdit = document.getElementById('formEdit');
+    const $editErr = document.getElementById('editErr');
+    const $editId = document.getElementById('editId');
+    const $editName = document.getElementById('editName');
+    const $editAuteur = document.getElementById('editAuteur');
+    const $editBio = document.getElementById('editBio');
+    const $editPicture = document.getElementById('editPicture');
+    const $btnLoadById = document.getElementById('btnLoadById');
+
+    function fillEditForm(lv){
+      $editId.value = lv.id ?? '';
+      $editName.value = lv.nameLivre ?? '';
+      $editAuteur.value = lv.auteur ?? '';
+      $editBio.value = lv.bio ?? '';
+      $editPicture.value = lv.picture ?? '';
+    }
+    function editErrHide(){ $editErr.style.display='none'; $editErr.textContent=''; }
+
+    $btnOpenEdit.addEventListener('click', () => { fillEditForm({}); editErrHide(); open($modalEdit); });
+    $btnCloseEdit.addEventListener('click', () => close($modalEdit));
+    $modalEdit.addEventListener('click', (e)=>{ if(e.target === $modalEdit) close($modalEdit); });
+
+    document.getElementById('btnLoadById').addEventListener('click', async ()=>{
+      const id = Number($editId.value);
+      if(!Number.isInteger(id) || id < 1){ return showErr($editErr, "L'ID doit être un entier ≥ 1."); }
+      try{
+        // GET /livre/{id}
+        const { data } = await api.get(`/livre/${encodeURIComponent(id)}`);
+        fillEditForm(data || {});
+        editErrHide();
+      }catch(err){
+        const msg = err?.response?.data?.detail || "Livre introuvable.";
+        showErr($editErr, `❌ ${msg}`);
+      }
+    });
+
+    $formEdit.addEventListener('submit', async (e)=>{
+      e.preventDefault(); editErrHide();
+      const id = Number($editId.value);
+      if(!Number.isInteger(id) || id < 1){ return showErr($editErr, "L'ID doit être un entier ≥ 1."); }
+
+      const body = {
+        nameLivre: $editName.value.trim(),
+        bio: $editBio.value.trim(),
+        auteur: $editAuteur.value.trim(),
+        picture: $editPicture.value.trim()
+      };
+      try{
+        // PUT /livre/{id}
+        await api.put(`/livre/${encodeURIComponent(id)}`, body);
+        close($modalEdit);
+        await loadData();
+        alert('✅ Livre modifié avec succès.');
+      }catch(err){
+        const msg = err?.response?.data?.detail || 'Erreur lors de la modification.';
+        showErr($editErr, `❌ ${msg}`);
+      }
+    });
+
+    // ====== DELETE ======
+    const $modalDelete = document.getElementById('modalDelete');
+    const $btnOpenDelete = document.getElementById('btnOpenDelete');
+    const $btnCloseDelete = document.getElementById('btnCloseDelete');
+    const $btnDoDelete = document.getElementById('btnDoDelete');
+    const $btnPreviewDel = document.getElementById('btnPreviewDel');
+    const $delId = document.getElementById('delId');
+    const $delPreview = document.getElementById('delPreview');
+    const $delErr = document.getElementById('delErr');
+
+    $btnOpenDelete.addEventListener('click', ()=>{ $delId.value=''; $delPreview.textContent='—'; hideErr($delErr); open($modalDelete); });
+    $btnCloseDelete.addEventListener('click', ()=> close($modalDelete));
+    $modalDelete.addEventListener('click', (e)=>{ if(e.target === $modalDelete) close($modalDelete); });
+
+    $btnPreviewDel.addEventListener('click', async ()=>{
+      const id = Number($delId.value);
+      if(!Number.isInteger(id) || id < 1){ return showErr($delErr, "L'ID doit être un entier ≥ 1."); }
+      try{
+        // GET /livre/{id}
+        const { data } = await api.get(`/livre/${encodeURIComponent(id)}`);
+        $delPreview.textContent = data ? `${data.id} — ${data.nameLivre}` : '—';
+        hideErr($delErr);
+      }catch(err){
+        const msg = err?.response?.data?.detail || "Livre introuvable.";
+        showErr($delErr, `❌ ${msg}`);
+      }
+    });
+
+    $btnDoDelete.addEventListener('click', async ()=>{
+      const id = Number($delId.value);
+      if(!Number.isInteger(id) || id < 1){ return showErr($delErr, "L'ID doit être un entier ≥ 1."); }
+      if(!confirm(`Confirmer la suppression du livre ${id} ?`)) return;
+      try{
+        // DELETE /livre/{id}
+        await api.delete(`/livre/${encodeURIComponent(id)}`);
+        close($modalDelete);
+        await loadData();
+        alert('✅ Livre supprimé.');
+      }catch(err){
+        const msg = err?.response?.data?.detail || 'Erreur lors de la suppression.';
+        showErr($delErr, `❌ ${msg}`);
+      }
+    });
+
+    // ====== SEARCH by ID ======
+    const $modalSearch = document.getElementById('modalSearch');
+    const $btnOpenSearch = document.getElementById('btnOpenSearch');
+    const $btnCloseSearch = document.getElementById('btnCloseSearch');
+    const $btnDoSearch = document.getElementById('btnDoSearch');
+    const $searchId = document.getElementById('searchId');
+    const $searchResult = document.getElementById('searchResult');
+    const $searchErr = document.getElementById('searchErr');
+
+    $btnOpenSearch.addEventListener('click', ()=>{ $searchId.value=''; $searchResult.innerHTML=''; hideErr($searchErr); open($modalSearch); });
+    $btnCloseSearch.addEventListener('click', ()=> close($modalSearch));
+    $modalSearch.addEventListener('click', (e)=>{ if(e.target === $modalSearch) close($modalSearch); });
+
+    $btnDoSearch.addEventListener('click', async ()=>{
+      const id = Number($searchId.value);
+      if(!Number.isInteger(id) || id < 1){ return showErr($searchErr, "L'ID doit être un entier ≥ 1."); }
+      try{
+        // GET /livre/{id}
+        const { data } = await api.get(`/livre/${encodeURIComponent(id)}`);
+        hideErr($searchErr);
+        $searchResult.innerHTML = data ? `
+          <div style="margin-top:10px">
+            <span class="pill">ID: ${safe(data.id)}</span>
+            <h3 style="margin:8px 0 4px">${safe(data.nameLivre)}</h3>
+            <div><strong>Auteur:</strong> ${safe(data.auteur)}</div>
+            <div style="margin:6px 0"><strong>Bio:</strong> ${safe(data.bio)}</div>
+            ${data.picture ? `<img class="cover" src="${safe(data.picture)}" alt="Couverture">` : ''}
+          </div>
+        ` : '<div class="muted">Aucun résultat.</div>';
+      }catch(err){
+        const msg = err?.response?.data?.detail || "Livre introuvable.";
+        showErr($searchErr, `❌ ${msg}`);
+        $searchResult.innerHTML = '';
+      }
+    });
+
+    // ====== Listar / Total ======
+    document.getElementById('btnVoir').addEventListener('click', loadData);
+    // loadData(); // descomenta si quieres cargar automáticamente al abrir
+  </script>
+</body>
+</html>

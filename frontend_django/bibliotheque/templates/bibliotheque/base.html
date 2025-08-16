@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}Bibliothèque{% endblock %}</title>
+  <style>
+    :root { --green:#2f9e44; --indigo:#3f51b5; --bg:#f6f7fb; --ink:#1f2937; --danger:#b91c1c; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1100px;margin:40px auto;padding:0 16px}
+    .card{background:#fff;border-radius:22px;box-shadow:0 10px 24px rgba(0,0,0,.08);padding:28px}
+    .title{display:flex;align-items:center;gap:10px}
+    h1{color:var(--indigo);margin:0}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+    .btn{appearance:none;border:1px solid var(--green);background:var(--green);color:#fff;
+         border-radius:14px;padding:10px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+    .btn.secondary{border-color:#334155;background:#334155}
+    .btn.danger{border-color:var(--danger);background:var(--danger)}
+    .btn.ghost{background:#fff;color:#334155;border:1px solid #334155}
+    .badge{background:var(--indigo);color:#fff;padding:6px 12px;border-radius:10px;font-weight:700}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px;border-bottom:1px solid #f0f0f0;text-align:left;vertical-align:top}
+    th{background:#fafbff;color:#334155;font-weight:800}
+    img.cover{max-width:90px;border-radius:8px}
+    .messages{margin:10px 0}
+    .msg{padding:10px 12px;border-radius:10px;margin-bottom:8px}
+    .msg.error{background:#fee2e2;color:#7f1d1d}
+    .msg.success{background:#ecfdf5;color:#065f46}
+    .msg.warning{background:#fef3c7;color:#92400e}
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="title">
+        <img alt="books" width="32" height="32" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f4da.svg">
+        <h1>{% block header %}Bibliothèque{% endblock %}</h1>
+      </div>
+
+      <div class="messages">
+        {% for message in messages %}
+          <div class="msg {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</body>
+</html>

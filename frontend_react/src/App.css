@@ -1,0 +1,95 @@
+.main-title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #3f51b5;
+  text-shadow: 2px 2px #ccc;
+  margin-bottom: 40px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.button-group.top {
+  margin-top: 2rem;
+}
+
+.button-group.bottom {
+  margin-top: 1rem;
+}
+
+/* Estilo general para los botones */
+.btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+}
+
+/* Colores */
+.green {
+  background-color: #4caf50;
+}
+
+.green:hover {
+  background-color: #388e3c;
+}
+
+.yellow {
+  background-color: #fbc02d;
+  color: black;
+}
+
+.yellow:hover {
+  background-color: #f9a825;
+}
+
+.red {
+  background-color: #f44336;
+}
+
+.red:hover {
+  background-color: #d32f2f;
+}
+
+.blue {
+  background-color: #3f51b5;
+}
+
+.blue:hover {
+  background-color: #303f9f;
+}
+
+h1 {
+  font-size: 3rem;
+  text-align: center;
+  color: #2c3e50;
+  font-family: 'Montserrat', sans-serif;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.card-container{
+
+  background-color: rgba(255, 255, 255, 0.95);
+  background-image: url(https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Flag_of_Montreal.svg/2560px-Flag_of_Montreal.svg.png);
+  padding: 40px;
+  max-width: 1000px;
+  margin: 40px auto;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.card-container:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
